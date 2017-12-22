@@ -15,7 +15,7 @@ except ImportError:
 
 from redis._compat import (b, xrange, imap, byte_to_chr, unicode, bytes, long,
                            BytesIO, nativestr, basestring, iteritems,
-                           Empty, Full, urlparse, parse_qs,
+                           urlparse, parse_qs,
                            recv, recv_into, select, unquote)
 from redis.exceptions import (
     RedisError,
@@ -53,8 +53,10 @@ if HIREDIS_AVAILABLE:
 
 if socket.USE_GEVENT:
     from gevent.queue import LifoQueue as ConnectionQueue
+    from gevent.queue import Empty, Full
 else:
     from redis._compat import LifoQueue as ConnectionQueue
+    from redis._compat import Empty, Full
 
 
 SYM_STAR = b('*')
