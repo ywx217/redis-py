@@ -15,7 +15,7 @@ except ImportError:
 
 from redis._compat import (b, xrange, imap, byte_to_chr, unicode, bytes, long,
                            BytesIO, nativestr, basestring, iteritems,
-                           LifoQueue, Empty, Full, urlparse, parse_qs,
+                           Empty, Full, urlparse, parse_qs,
                            recv, recv_into, select, unquote)
 from redis.exceptions import (
     RedisError,
@@ -50,6 +50,12 @@ if HIREDIS_AVAILABLE:
     if not HIREDIS_SUPPORTS_BYTE_BUFFER or (
             sys.version_info[0] == 2 and sys.version_info[1] < 7):
         HIREDIS_USE_BYTE_BUFFER = False
+
+if socket.USE_GEVENT:
+    from gevent.queue import LifoQueue as ConnectionQueue
+else:
+    from redis._compat import LifoQueue as ConnectionQueue
+
 
 SYM_STAR = b('*')
 SYM_DOLLAR = b('$')
@@ -1033,7 +1039,7 @@ class BlockingConnectionPool(ConnectionPool):
         >>> pool = BlockingConnectionPool(timeout=5)
     """
     def __init__(self, max_connections=50, timeout=20,
-                 connection_class=Connection, queue_class=LifoQueue,
+                 connection_class=Connection, queue_class=ConnectionQueue,
                  **connection_kwargs):
 
         self.queue_class = queue_class

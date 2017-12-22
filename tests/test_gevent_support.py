@@ -32,19 +32,11 @@ def test_get_and_set(stat, r):
 def test_main(count):
     import gevent
     import gevent.queue
-    import redis.socket_patch
 
-    if redis.socket_patch.USE_GEVENT:
-        connection_pool = redis.BlockingConnectionPool(
-            max_connections=50,
-            queue_class=gevent.queue.Queue,
-            host='192.168.46.126', port=6379, db=9
-        )
-    else:
-        connection_pool = redis.BlockingConnectionPool(
-            max_connections=50,
-            host='192.168.46.126', port=6379, db=9
-        )
+    connection_pool = redis.BlockingConnectionPool(
+        max_connections=50,
+        host='192.168.46.126', port=6379, db=9
+    )
     client = redis.StrictRedis(connection_pool=connection_pool)
 
     stat = Stat()
